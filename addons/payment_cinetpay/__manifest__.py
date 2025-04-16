@@ -1,24 +1,26 @@
 {
-    'name': 'CinetPay Payment Acquirer',
+    'name': 'Payment CinetPay',
     'version': '1.0',
-    'summary': 'Module de paiement Odoo via CinetPay',
+    'category': 'Payment',
+    'summary': 'Module de paiement via CinetPay pour Odoo',
     'description': """
-Intégration du provider CinetPay pour les paiements en ligne dans Odoo.
-Fonctionnalités :
-- Paiement par carte bancaire / mobile money via CinetPay
-- Gestion des transactions
-- Gestion des callbacks
-""",
-    'author': 'AlainGansonré/ Sunsoft_Internationnal',
-    'category': 'Accounting/Payment Acquirers',
-    'depends': ['payment',],
+        Ce module permet d'intégrer la passerelle de paiement CinetPay dans Odoo,
+        permettant aux utilisateurs de traiter les paiements via cette plateforme.
+    """,
+    'author': 'Sunsoft',
+    'website': 'https://www.sunsoft.com',
+    'depends': ['payment'],
     'data': [
-        'data/payment_provider_data.xml',
-        'views/payment_provider_views.xml',
-        'views/payment_template.xml', 
+        'views/payment_provider_form.xml',  # Formulaire de configuration du fournisseur de paiement
+        #'views/payment_transaction_view.xml',  # Vue pour afficher les transactions de paiement
     ],
-   
+    'assets': {
+        'web.assets_frontend': [
+            'payment_cinetpay/static/src/js/payment_form.js',  # Script JavaScript pour gérer le formulaire de paiement
+        ],
+    },
     'installable': True,
-    'application': False,
+    'auto_install': False,
+    'application': True,
     'license': 'LGPL-3',
 }

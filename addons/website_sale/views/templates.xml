@@ -1667,18 +1667,6 @@
         </div>
     </template>
 
-    <template id="product_buy_now" inherit_id="website_sale.product" active="False" name="Buy Now Button">
-        <xpath expr="//t[@t-set='hasBuyNow']" position="attributes">
-            <attribute name="t-value" remove="false" add="true" separator=" "/>
-        </xpath>
-        <xpath expr="//a[@id='add_to_cart']" position="after">
-            <a role="button" class="btn btn-outline-primary o_we_buy_now ms-1" href="#">
-                <i class="fa fa-bolt me-2"/>
-                Buy now
-            </a>
-        </xpath>
-    </template>
-
     <template id="website_sale.tax_indication" active="False">
         <span t-if="website.show_line_subtotals_tax_selection == 'tax_excluded'" class="h6 text-muted">
             Tax Excluded

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue pour le formulaire de fournisseur de paiement CinetPay -->
+    <record id="payment_provider_form_cinetpay" model="ir.ui.view">
+        <field name="name">CinetPay Provider Form</field>
+        <field name="model">payment.provider</field>
+        <field name="inherit_id" ref="payment.payment_provider_form"/>
+        <field name="arch" type="xml">
+            <group name="provider_credentials" position="inside">
+                <!-- Formulaire spécifique pour CinetPay -->
+                <group invisible="code != 'cinetpay'" name="cinetpay_credentials">
+                    <field name="cinetpay_api_key" 
+                           string="API Key" 
+                           required="code == 'cinetpay' and state != 'disabled'"/>
+                    <field name="cinetpay_site_id" 
+                           string="Site ID" 
+                           required="code == 'cinetpay' and state != 'disabled'"/>
+                    <field name="cinetpay_webhook_secret" 
+                           string="Webhook Secret" 
+                           required="code == 'cinetpay' and state != 'disabled'" 
+                           password="True"/>
+                </group>
+            </group>
+        </field>
+    </record>
+
+</odoo>

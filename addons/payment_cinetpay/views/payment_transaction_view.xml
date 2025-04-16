@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue liste des transactions CinetPay -->
+    <record id="view_payment_transaction_tree_cinetpay" model="ir.ui.view">
+        <field name="name">payment.transaction.tree.cinetpay</field>
+        <field name="model">payment.transaction</field>
+        <field name="arch" type="xml">
+            <tree string="Transactions CinetPay">
+                <field name="reference"/>
+                <field name="state"/>
+                <field name="amount"/>
+                <field name="partner_id"/>
+                <field name="date"/>
+                <field name="provider_code"/>
+                <field name="payment_method_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue formulaire des transactions CinetPay -->
+    <record id="view_payment_transaction_form_cinetpay" model="ir.ui.view">
+        <field name="name">payment.transaction.form.cinetpay</field>
+        <field name="model">payment.transaction</field>
+        <field name="arch" type="xml">
+            <form string="Transaction CinetPay">
+                <sheet>
+                    <group>
+                        <field name="reference"/>
+                        <field name="state"/>
+                        <field name="amount"/>
+                        <field name="partner_id"/>
+                        <field name="date"/>
+                        <field name="provider_code"/>
+                        <field name="payment_method_id"/>
+                        <field name="cinetpay_transaction_id" string="ID Transaction CinetPay"/>
+                        <field name="cinetpay_payment_url" string="Lien de paiement CinetPay"/>
+                    </group>
+                    <footer>
+                        <button name="%(action_open_cinetpay_url)d"
+                                string="Ouvrir le lien de paiement"
+                                type="action"
+                                class="btn-primary"
+                                attrs="{'invisible': [('cinetpay_payment_url', '=', False)]}"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action serveur pour ouvrir le lien de paiement -->
+    <act_window id="action_open_cinetpay_url"
+                name="CinetPay"
+                res_model="payment.transaction"
+                binding_model="payment.transaction"
+                target="new"
+                view_mode="form"/>
+
+    <!-- Action serveur pour afficher uniquement les transactions CinetPay -->
+    <record id="action_payment_transaction_cinetpay" model="ir.actions.act_window">
+        <field name="name">Transactions CinetPay</field>
+        <field name="res_model">payment.transaction</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('provider_code', '=', 'cinetpay')]</field>
+        <field name="context">{}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_payment_transaction_tree_cinetpay')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_payment_transaction_form_cinetpay')})
+        ]"/>
+    </record>
+
+    <!-- Menu dans Paiement > Transactions CinetPay -->
+    <menuitem id="menu_payment_transaction_cinetpay"
+              name="Transactions CinetPay"
+              parent="payment.menu_payment_config"
+              sequence="20"
+              action="action_payment_transaction_cinetpay"/>
+
+</odoo>

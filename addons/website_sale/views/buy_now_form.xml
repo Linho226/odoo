@@ -1,0 +1,62 @@
+<odoo>
+  <template id="buy_now_form" name="Formulaire CinetPay">
+    <t t-call="website.layout">
+      <t t-call-assets="web.assets_frontend" t-js="true"/>
+      <div class="container mt-5">
+        <h2>Informations de paiement pour <t t-esc="product.name"/></h2>
+        <form id="cinetpay-form" method="post" action="/payment/cinetpay/submit" class="mt-4">
+        
+          <input type="hidden" name="product_name" t-att-value="product.name"/>
+          <input type="hidden" name="amount" t-att-value="product.list_price"/>
+          <input type="hidden" name="customer_id" value="1"/>
+
+          <div class="form-group">
+            <label>Nom :</label>
+            <input class="form-control" name="customer_name" required="1"/>
+          </div>
+
+          <div class="form-group">
+            <label>Prénom :</label>
+            <input class="form-control" name="customer_surname" required="1"/>
+          </div>
+
+          <div class="form-group">
+            <label>Email :</label>
+            <input type="email" class="form-control" name="customer_email" required="1"/>
+          </div>
+
+          <div class="form-group">
+            <label>Téléphone :</label>
+            <input class="form-control" name="customer_phone" required="1"/>
+          </div>
+
+          <div class="form-group">
+            <label>Adresse :</label>
+            <input class="form-control" name="customer_address" required="1"/>
+          </div>
+
+          <div class="form-row mt-3">
+            <div class="col">
+              <label>Ville :</label>
+              <input class="form-control" name="customer_city"/>
+            </div>
+            <div class="col">
+              <label>Pays :</label>
+              <input class="form-control" name="customer_country"/>
+            </div>
+            <div class="col">
+              <label>État :</label>
+              <input class="form-control" name="customer_state"/>
+            </div>
+            <div class="col">
+              <label>Code postal :</label>
+              <input class="form-control" name="customer_zip"/>
+            </div>
+          </div>
+
+          <button class="btn btn-primary mt-4" type="submit">Payer maintenant</button>
+        </form>
+      </div>
+    </t>
+  </template>
+</odoo>

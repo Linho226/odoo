@@ -1,79 +1,90 @@
-from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
-import hmac
-import hashlib
-import requests
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
+
 import logging
+import pprint
+
+from werkzeug import urls
+from odoo import models, _, fields
+from odoo.exceptions import ValidationError, UserError
+
+from odoo.addons.payment import utils as payment_utils
+from odoo.addons.payment_cinetpay import const
 
 _logger = logging.getLogger(__name__)
+
 
 class PaymentTransaction(models.Model):
     _inherit = 'payment.transaction'
 
     def _get_specific_rendering_values(self, processing_values):
-        """Prépare les données à envoyer à l'API CinetPay pour initier la transaction."""
-        self.ensure_one()
+        """ Préparation des valeurs spécifiques à CinetPay pour le formulaire de redirection. """
+        res = super()._get_specific_rendering_values(processing_values)
+        if self.provider_code != 'cinetpay':
+            return res
 
-        provider = self.provider_id
-        if provider.code != 'cinetpay':
-            return super()._get_specific_rendering_values(processing_values)
+        base_url = self.provider_id.get_base_url()
+        return_url = urls.url_join(base_url, CinetpayController._return_url)
+        notify_url = urls.url_join(base_url, CinetpayController._notify_url)
 
-        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-        notify_url = f"{base_url}/payment/cinetpay/ipn"
-        return_url = self.get_return_url()
-
-        # Récupération des informations détaillées du client
-        customer = self.partner_id
-        customer_phone_number = customer.phone or ""
-        customer_address = customer.street or ""
-        customer_city = customer.city or ""
-        customer_country = customer.country_id.code or ""
-        customer_state = customer.state_id.code or ""
-        customer_zip_code = customer.zip or ""
-
-        # Construction de la requête à envoyer à CinetPay
         payload = {
-            'apikey': provider.cinetpay_api_key,
-            'site_id': provider.cinetpay_site_id,
-            'transaction_id': self.reference,  # Ou générer un ID unique ici
-            'amount': str(self.amount),
+            'amount': self.amount,
             'currency': self.currency_id.name,
-            'description': self.reference,
+            'transaction_id': self.reference,
             'return_url': return_url,
             'notify_url': notify_url,
-            'customer_id': str(customer.id),  # Identifiant unique du client (optionnel)
-            'customer_name': customer.name,
-            'customer_email': customer.email or 'noemail@example.com',
-            'customer_phone_number': customer_phone_number,
-            'customer_address': customer_address,
-            'customer_city': customer_city,
-            'customer_country': customer_country,
-            'customer_state': customer_state,
-            'customer_zip_code': customer_zip_code,
-            'channels': 'ALL',  # Optionnel, peut être personnalisé selon ton besoin
-            'metadata': 'user1',  # Optionnel
-            'lang': 'FR',  # Langue à afficher pendant le paiement
-            'invoice_data': {
-                'Donnee1': '',  # Remplir ces champs si nécessaire
-                'Donnee2': '',
-                'Donnee3': ''
-            }
+            'customer_name': self.partner_name,
+            'customer_email': self.partner_email,
+            'description': f"Paiement pour {self.reference}",
+            'site_id': self.provider_id.cinetpay_site_id,
+            'apikey': self.provider_id.cinetpay_apikey,
         }
 
-        _logger.info("CinetPay: Préparation de la transaction : %s", payload)
+        response = self.provider_id._cinetpay_make_request('payment', payload=payload)
+        _logger.info("Réponse CinetPay INIT : %s", pprint.pformat(response))
 
-        try:
-            headers = {'Content-Type': 'application/json'}
-            response = requests.post("https://api-checkout.cinetpay.com/v2/payment", json=payload, headers=headers)
-            response.raise_for_status()
-            data = response.json()
-            if data.get('code') != '201':
-                raise ValidationError(_('Erreur CinetPay: %s') % data.get('message'))
+        if response.get('code') != '201':
+            raise ValidationError(_("CinetPay: Erreur de création de transaction : %s", response.get('message')))
 
-            return {
-                'api_url': data['data']['payment_url'],
-            }
+        return {
+            'api_url': response['data']['payment_url'],
+        }
 
-        except requests.RequestException as e:
-            _logger.error("Erreur lors de l'appel à l'API CinetPay : %s", e)
-            raise ValidationError(_("Une erreur est survenue lors de la connexion à CinetPay."))
+    def _process_notification_data(self, notification_data):
+        """ Traitement des notifications CinetPay. """
+        super()._process_notification_data(notification_data)
+        if self.provider_code != 'cinetpay':
+            return
+
+        self.ensure_one()
+        _logger.info("Notification reçue de CinetPay : %s", pprint.pformat(notification_data))
+
+        tx_ref = notification_data.get('transaction_id')
+        status = notification_data.get('status')
+
+        if self.reference != tx_ref:
+            raise ValidationError(_("CinetPay: Référence transaction non valide."))
+
+        if status == 'ACCEPTED':
+            self._set_done()
+        elif status == 'PENDING':
+            self._set_pending()
+        elif status == 'REFUSED':
+            self._set_canceled()
+        else:
+            self._set_error(_("Statut de paiement inconnu : %s", status))
+
+    def _get_tx_from_notification_data(self, provider_code, notification_data):
+        """ Récupération de la transaction depuis les données CinetPay. """
+        tx = super()._get_tx_from_notification_data(provider_code, notification_data)
+        if provider_code != 'cinetpay' or tx:
+            return tx
+
+        tx_ref = notification_data.get('transaction_id')
+        if not tx_ref:
+            raise ValidationError(_("CinetPay: Référence manquante dans la notification."))
+
+        tx = self.search([('reference', '=', tx_ref), ('provider_code', '=', 'cinetpay')])
+        if not tx:
+            raise ValidationError(_("CinetPay: Aucune transaction trouvée avec la référence %s.", tx_ref))
+
+        return tx

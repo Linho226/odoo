@@ -30,6 +30,11 @@
         # QWeb templates
         'views/delivery_form_templates.xml',
         'views/templates.xml',
+        'views/product_buy_now.xml',
+        'views/buy_now_form.xml',
+        'views/account_move_views.xml',
+
+
 
         # Model views.
         'views/account_move_views.xml',
@@ -53,6 +58,7 @@
         'views/website_sale_visitor_views.xml',
         'views/variant_templates.xml',
         'views/website_views.xml',
+
 
         # Website snippets
         'views/snippets/snippets.xml',
@@ -85,9 +91,8 @@
             'website_sale/static/src/scss/website_sale_delivery.scss',
             'website/static/lib/multirange/multirange_custom.scss',
             'sale/static/src/scss/sale_portal.scss',
-
+            'website_sale/static/src/js/buy_now.js',
             'website_sale/static/src/scss/product_configurator.scss',
-
             'website_sale/static/src/js/address.js',
             'website_sale/static/src/js/cart.js',
             'website_sale/static/src/js/checkout.js',
