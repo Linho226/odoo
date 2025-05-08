@@ -96,6 +96,10 @@ class PosOrder(models.Model):
         else:
             pos_order = existing_order
 
+            # If the order is belonging to another session, it must be moved to the current session first
+            if order.get('session_id') and order['session_id'] != pos_order.session_id.id:
+                pos_order.write({'session_id': order['session_id']})
+
             # Save lines and payments before to avoid exception if a line is deleted
             # when vals change the state to 'paid'
             for field in ['lines', 'payment_ids']:
@@ -136,7 +140,7 @@ class PosOrder(models.Model):
 
     def _process_saved_order(self, draft):
         self.ensure_one()
-        if not draft:
+        if not draft and self.state != 'cancel':
             try:
                 self.action_pos_order_paid()
             except psycopg2.DatabaseError:
@@ -1351,10 +1355,11 @@ class PosOrderLine(models.Model):
     def _is_field_accepted(self, field):
         return field in self._fields and not field in ['combo_parent_id', 'combo_line_ids']
 
-    @api.depends('refund_orderline_ids')
+    @api.depends('refund_orderline_ids', 'refund_orderline_ids.order_id.state')
     def _compute_refund_qty(self):
         for orderline in self:
-            orderline.refunded_qty = -sum(orderline.mapped('refund_orderline_ids.qty'))
+            refund_order_line = orderline.refund_orderline_ids.filtered(lambda l: l.order_id.state != 'cancel')
+            orderline.refunded_qty = -sum(refund_order_line.mapped('qty'))
 
     def _prepare_refund_data(self, refund_order, PosOrderLineLot):
         """

@@ -926,6 +926,8 @@ msgid ""
 "Whoa there! Making this change would wipe out your current data. Let's avoid"
 " that, shall we?"
 msgstr ""
+"Oei! Als je deze wijziging aanbrengt, worden je huidige gegevens gewist. "
+"Laten we dat voorkomen, oké?"
 
 #. module: analytic
 #. odoo-python

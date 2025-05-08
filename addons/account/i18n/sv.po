@@ -35,6 +35,8 @@
 # Chrille Hedberg <hedberg.chrille@gmail.com>, 2025
 # Jakob Krabbe <jakob.krabbe@vertel.se>, 2025
 # Wil Odoo, 2025
+# Larissa Manderfeld, 2025
+# Thomas Becquevort, 2025
 # 
 msgid ""
 msgstr ""
@@ -42,7 +44,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-04-07 20:36+0000\n"
 "PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Wil Odoo, 2025\n"
+"Last-Translator: Thomas Becquevort, 2025\n"
 "Language-Team: Swedish (https://app.transifex.com/odoo/teams/41243/sv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -4612,6 +4614,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account.account_move_view_activity
 msgid "Commercial Entity"
 msgstr "Kommersiell enhet"
+
+#. module: account
+#: model:ir.model.fields,field_description:account.field_account_move_line__commercial_partner_country
+msgid "Commercial Partner Country"
+msgstr "Handelspartners land"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_journal__invoice_reference_model
@@ -10927,12 +10934,12 @@ msgstr "Icke-handel"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_move_line_filter
 msgid "Non Trade Payable"
-msgstr "Icke-handelsfordran"
+msgstr "icke-handelsrelaterade skulder"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_move_line_filter
 msgid "Non Trade Receivable"
-msgstr "Icke-handelsskuld"
+msgstr "icke-handelsrelaterade fordringar"
 
 #. module: account
 #: model:ir.model.fields.selection,name:account.selection__account_account__account_type__asset_non_current

@@ -45,7 +45,7 @@ class HrAttendance(models.Model):
     overtime_hours = fields.Float(string="Over Time", compute='_compute_overtime_hours', store=True)
     overtime_status = fields.Selection(selection=[('to_approve', "To Approve"),
                                                   ('approved', "Approved"),
-                                                  ('refused', "Refused")], compute="_compute_overtime_status", store=True, tracking=True)
+                                                  ('refused', "Refused")], compute="_compute_overtime_status", store=True, tracking=True, readonly=False)
     validated_overtime_hours = fields.Float(string="Extra Hours", compute='_compute_validated_overtime_hours', store=True, readonly=False, tracking=True)
     no_validated_overtime_hours = fields.Boolean(compute='_compute_no_validated_overtime_hours')
     in_latitude = fields.Float(string="Latitude", digits=(10, 7), readonly=True, aggregator=None)
@@ -671,14 +671,17 @@ class HrAttendance(models.Model):
 
     def _read_group_employee_id(self, resources, domain):
         user_domain = self.env.context.get('user_domain')
+        employee_domain = [('company_id', 'in', self.env.context.get('allowed_company_ids', []))]
+        if not self.env.user.has_group('hr_attendance.group_hr_attendance_manager'):
+            employee_domain = AND([employee_domain, [('attendance_manager_id', '=', self.env.user.id)]])
         if not user_domain:
-            return self.env['hr.employee'].search([('company_id', 'in', self.env.context.get('allowed_company_ids', []))])
+            return self.env['hr.employee'].search(employee_domain)
         else:
             employee_name_domain = []
             for leaf in user_domain:
                 if len(leaf) == 3 and leaf[0] == 'employee_id':
                     employee_name_domain.append([('name', leaf[1], leaf[2])])
-            return resources | self.env['hr.employee'].search(OR(employee_name_domain))
+            return resources | self.env['hr.employee'].search(AND([OR(employee_name_domain), employee_domain]))
 
     def action_approve_overtime(self):
         self.write({
