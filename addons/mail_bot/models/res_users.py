@@ -25,9 +25,10 @@ class Users(models.Model):
         return super().SELF_READABLE_FIELDS + ['odoobot_state']
 
     def _on_webclient_bootstrap(self):
-        super()._on_webclient_bootstrap()
+        result = super()._on_webclient_bootstrap()
         if self._is_internal() and self.odoobot_state in [False, "not_initialized"]:
             self._init_odoobot()
+        return result
 
     def _init_odoobot(self):
         self.ensure_one()

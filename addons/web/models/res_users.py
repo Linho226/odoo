@@ -25,3 +25,4 @@ class ResUsers(models.Model):
 
     def _on_webclient_bootstrap(self):
         self.ensure_one()
+    
