@@ -105,12 +105,22 @@
             <!-- TVA déplacé ici -->
             <!-- pour les version plus recente d'odoo ajouter un s à tax_id-->
             <td class="text-end" style="width: 8%;">
+              <t t-set="vat18_amount" t-value="0"/>
               <t t-if="line.tax_ids and line.price_unit">
-                <t t-set="tax_amount" t-value="sum([line.product_uom_qty * line.price_unit * tax.amount / 100 for tax in line.tax_ids])"/>
-                <span t-out="tax_amount" t-options="{'widget': 'float', 'precision': 0, 'thousands_sep': ' '}"/>
+                <t t-foreach="line.tax_ids" t-as="tax">
+                  <t t-if="tax.tax_group_id and ('VAT' in tax.tax_group_id.name.upper() or 'T.V.A. 18%' in tax.tax_group_id.name.upper()) and tax.amount == 18">
+                    <t t-set="vat18_amount" t-value="line.product_uom_qty * line.price_unit * 0.18"/>
+                  </t>
+                </t>
+                <t t-if="vat18_amount">
+                  <span t-out="vat18_amount" t-options="{'widget': 'float', 'precision': 0, 'thousands_sep': ' '}"/>
+                </t>
+                <t t-else="">
+                  <span>-</span>
+                </t>
               </t>
               <t t-else="">
-                <span class="text-muted">-</span>
+                <span>-</span>
               </t>
             </td>
             <td t-if="display_discount" class="text-end">

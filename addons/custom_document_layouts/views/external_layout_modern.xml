@@ -91,8 +91,7 @@
                     </td>
                     <td style="border: 1px solid black; padding: 2px; margin-top: 0px;">
                       <t t-if="report_type == 'pdf'">
-                        <span class="page"/>
-1 <span class="topage"/>
+                        <span class="page"/>1 <span class="topage"/>
                       </t>
                       <t t-else="">1</t>
                     </td>
@@ -284,15 +283,15 @@
                       <!-- Calcul du montant BIC -->
                       <t t-set="htva_bic_vat18" t-value="0"/>
                       <t t-set="somme_tva18_bic" t-value="0"/>
-                      <t t-if="o._fields.get('invoice_line_ids')">
+                      <t t-if="o._fields.get('invoice_line_ids') and o.invoice_line_ids">
                         <t t-foreach="o.invoice_line_ids" t-as="line">
                           <t t-set="has_bic_group" t-value="False"/>
                           <t t-set="has_vat18_group" t-value="False"/>
                           <t t-foreach="line.tax_ids" t-as="tax">
-                            <t t-if="tax.tax_group_id and 'BIC' in tax.tax_group_id.name.upper()">
+                            <t t-if="tax.tax_group_id and 'BIC (2%)' in tax.tax_group_id.name.upper()">
                               <t t-set="has_bic_group" t-value="True"/>
                             </t>
-                            <t t-if="tax.tax_group_id and 'VAT' in tax.tax_group_id.name.upper() and tax.amount == 18">
+                            <t t-if="tax.tax_group_id and 'T.V.A. 18%' in tax.tax_group_id.name.upper() and tax.amount == 18">
                               <t t-set="has_vat18_group" t-value="True"/>
                             </t>
                           </t>
@@ -303,6 +302,27 @@
                         </t>
                       </t>
                       <t t-set="bic_amount" t-value="(htva_bic_vat18 + somme_tva18_bic) * 0.02"/>
+                       <!-- Calcul du montant BIC pour les commandes de vente  sale order-->
+                      <t t-if="o._fields.get('order_line') and o.order_line">
+                      <t t-foreach="o.order_line" t-as="line">
+                        <t t-set="has_bic_group" t-value="False"/>
+                        <t t-set="has_vat18_group" t-value="False"/>
+                        <t t-foreach="line.tax_ids" t-as="tax">
+                          <t t-if="tax.tax_group_id and 'BIC (2%)' in tax.tax_group_id.name.upper()">
+                            <t t-set="has_bic_group" t-value="True"/>
+                          </t>
+                          <t t-if="tax.tax_group_id and 'T.V.A. 18%' in tax.tax_group_id.name.upper() and tax.amount == 18">
+                            <t t-set="has_vat18_group" t-value="True"/>
+                          </t>
+                        </t>
+                        <t t-if="has_bic_group and has_vat18_group">
+                          <t t-set="htva_bic_vat18" t-value="htva_bic_vat18 + line.price_subtotal"/>
+                          <t t-set="somme_tva18_bic" t-value="somme_tva18_bic + (line.price_subtotal * 0.18)"/>
+                        </t>
+                      </t>
+                    </t>
+                    <t t-set="bic_amount" t-value="(htva_bic_vat18 + somme_tva18_bic) * 0.02"/>
+
 
                       <!-- Ligne BIC (affichée seulement si bic_amount > 0) -->
                       <tr t-if="bic_amount > 0">
@@ -316,18 +336,23 @@
                           <span t-esc="'{:,.2f}'.format(bic_amount).replace(',', ' ').replace('.00', '').replace('.', ',')"/>
                         </td>
                       </tr>
+                      <!--Pour les verisons en lignes d'odoo, dans le groupe des taxes la tva est recunue en tant que T.V.A. 18%
+                                    tandis que le BIC est recunue en tant que BIC (2%) -->
+
+                      <!--Pour ceux en locale la tva est reconnue en tant que VAT et le BIC en tant que BIC avant la mise en ligne 
+                                    verifie bien les valeurs sinon, ils ne vont pas s'afficher en ligne ou en local -->
 
                       <!-- Calcul du HTVA des lignes avec BIC et TVA 18% -->
                       <t t-set="htva_bic_vat18" t-value="0"/>
-                      <t t-if="o._fields.get('invoice_line_ids')">
+                      <t t-if="o._fields.get('invoice_line_ids') and o.invoice_line_ids">
                         <t t-foreach="o.invoice_line_ids" t-as="line">
                           <t t-set="has_bic_group" t-value="False"/>
                           <t t-set="has_vat18_group" t-value="False"/>
                           <t t-foreach="line.tax_ids" t-as="tax">
-                            <t t-if="tax.tax_group_id and 'BIC' in tax.tax_group_id.name.upper()">
+                            <t t-if="tax.tax_group_id and ('BIC' in tax.tax_group_id.name.upper() or 'BIC (2%)' in tax.tax_group_id.name.upper())">
                               <t t-set="has_bic_group" t-value="True"/>
                             </t>
-                            <t t-if="tax.tax_group_id and 'VAT' in tax.tax_group_id.name.upper() and tax.amount == 18">
+                            <t t-if="tax.tax_group_id and ('VAT' in tax.tax_group_id.name.upper() or 'T.V.A. 18%' in tax.tax_group_id.name.upper()) and tax.amount == 18">
                               <t t-set="has_vat18_group" t-value="True"/>
                             </t>
                           </t>
@@ -338,17 +363,35 @@
                           <!-- Si BIC seul ou TVA seule, on n'ajoute rien -->
                         </t>
                       </t>
+                      <t t-if="o._fields.get('order_line') and o.order_line">
+                        <t t-foreach="o.order_line" t-as="line">
+                          <t t-set="has_bic_group" t-value="False"/>
+                          <t t-set="has_vat18_group" t-value="False"/>
+                          <t t-foreach="line.tax_ids" t-as="tax">
+                            <t t-if="tax.tax_group_id and ('BIC' in tax.tax_group_id.name.upper() or 'BIC (2%)' in tax.tax_group_id.name.upper())">
+                              <t t-set="has_bic_group" t-value="True"/>
+                            </t>
+                            <t t-if="tax.tax_group_id and ('VAT' in tax.tax_group_id.name.upper() or 'T.V.A. 18%' in tax.tax_group_id.name.upper()) and tax.amount == 18">
+                              <t t-set="has_vat18_group" t-value="True"/>
+                            </t>
+                          </t>
+                          <t t-if="has_bic_group and has_vat18_group">
+                            <t t-set="htva_bic_vat18" t-value="htva_bic_vat18 + line.price_subtotal"/>
+                          </t>
+                        </t>
+                      </t>
+    
                       <!-- Calcul de la somme des TVA 18% associée au BIC -->
                       <t t-set="somme_tva18_bic" t-value="0"/>
-                      <t t-if="o._fields.get('invoice_line_ids')">
+                      <t t-if="o._fields.get('invoice_line_ids') and o.invoice_line_ids">
                         <t t-foreach="o.invoice_line_ids" t-as="line">
                           <t t-set="has_bic_group" t-value="False"/>
                           <t t-set="has_vat18_group" t-value="False"/>
                           <t t-foreach="line.tax_ids" t-as="tax">
-                            <t t-if="tax.tax_group_id and 'BIC' in tax.tax_group_id.name.upper()">
+                            <t t-if="tax.tax_group_id and ('BIC' in tax.tax_group_id.name.upper() or 'BIC (2%)' in tax.tax_group_id.name.upper())">
                               <t t-set="has_bic_group" t-value="True"/>
                             </t>
-                            <t t-if="tax.tax_group_id and 'VAT' in tax.tax_group_id.name.upper() and tax.amount == 18">
+                            <t t-if="tax.tax_group_id and ('VAT' in tax.tax_group_id.name.upper() or 'T.V.A. 18%' in tax.tax_group_id.name.upper()) and tax.amount == 18">
                               <t t-set="has_vat18_group" t-value="True"/>
                             </t>
                           </t>
@@ -357,6 +400,24 @@
                             <t t-set="somme_tva18_bic" t-value="somme_tva18_bic + (line.price_subtotal * 0.18)"/>
                           </t>
                           <!-- Si BIC seul ou TVA seule, on n'ajoute rien -->
+                        </t>
+                      </t>
+                      <!--calcule de la tax pour sale order-->
+                      <t t-if="o._fields.get('order_line') and o.order_line">
+                        <t t-foreach="o.order_line" t-as="line">
+                          <t t-set="has_bic_group" t-value="False"/>
+                          <t t-set="has_vat18_group" t-value="False"/>
+                          <t t-foreach="line.tax_ids" t-as="tax">
+                            <t t-if="tax.tax_group_id and ('BIC' in tax.tax_group_id.name.upper() or 'BIC (2%)' in tax.tax_group_id.name.upper())">
+                              <t t-set="has_bic_group" t-value="True"/>
+                            </t>
+                            <t t-if="tax.tax_group_id and ('VAT' in tax.tax_group_id.name.upper() or 'T.V.A. 18%' in tax.tax_group_id.name.upper()) and tax.amount == 18">
+                              <t t-set="has_vat18_group" t-value="True"/>
+                            </t>
+                          </t>
+                          <t t-if="has_bic_group and has_vat18_group">
+                            <t t-set="somme_tva18_bic" t-value="somme_tva18_bic + (line.price_subtotal * 0.18)"/>
+                          </t>
                         </t>
                       </t>
 
@@ -379,7 +440,16 @@
               </table>
             </div>
           </div>
-
+          <!-- Ajoute ce bloc dans ta boucle pour voir ce que contiennent les taxes sur chaque ligne use ce code 
+          <t t-foreach="o.invoice_line_ids or o.order_line" t-as="line">
+            <t t-foreach="line.tax_ids" t-as="tax">
+              <tr>
+                <td colspan="3" style="color: blue;">
+                  Groupe : <span t-esc="tax.tax_group_id.name"/> | Taux : <span t-esc="tax.amount"/>
+                </td>
+              </tr>
+            </t>
+          </t> -->
           <!-- ============================================================= -->
           <!-- MONTANT EN LETTRES (conversion automatique)                  -->
           <!-- ============================================================= -->
@@ -390,7 +460,7 @@
                 <t t-if="o._name == 'account.move'">
                   <t t-if="o._fields.get('amount_total') and o.amount_total">
                     ARRETE LA PRESENTE FACTURE DEFINITIVE A LA SOMME DE 
-                                                                                                                                                                                                                                                                    <!-- Conversion automatique du montant en lettres -->
+                                                                                                                                                                                                                                                                                        <!-- Conversion automatique du montant en lettres -->
                     <span t-if="o._fields.get('currency_id') and o.currency_id" t-esc="o.currency_id.amount_to_text(o.amount_total).upper()"/>
                     CFA.
                   </t>
