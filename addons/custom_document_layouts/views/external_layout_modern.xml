@@ -47,8 +47,10 @@
                     <td style="border: 1px solid black; padding: 2px; margin-top: 0px; font-size: 16px;">
                       <strong>Document N°</strong>
                     </td>
-                    <td style="border: 1px solid black; padding: 2px; margin-top: 0px; font-size: 16px;">
-                      <span t-esc="o.name"/>
+                    <td style="border: 1px solid black; padding: 2px;fw-bold; margin-top: 0px; font-size: 16px;">
+                      <strong>
+                        <span t-esc="o.name"/>
+                      </strong>
                     </td>
                   </tr>
 
@@ -58,8 +60,10 @@
                       <strong>Référence</strong>
                     </td>
                     <td style="border: 1px solid black; padding: 2px; margin-top: 0px;">
-                      <span t-if="o._fields.get('ref') and o.ref" t-esc="o.ref"/>
-                      <span t-elif="o._fields.get('client_order_ref') and o.client_order_ref" t-esc="o.client_order_ref"/>
+                      <strong>
+                        <span t-if="o._fields.get('ref') and o.ref" t-esc="o.ref"/>
+                        <span t-elif="o._fields.get('client_order_ref') and o.client_order_ref" t-esc="o.client_order_ref"/>
+                      </strong>
                     </td>
                   </tr>
 
@@ -69,8 +73,10 @@
                       <strong>Date</strong>
                     </td>
                     <td style="border: 1px solid black; padding: 2px; margin-top: 0px;">
-                      <span t-if="o._fields.get('invoice_date') and o.invoice_date" t-esc="o.invoice_date"/>
-                      <span t-elif="o._fields.get('date_order') and o.date_order" t-esc="o.date_order"/>
+                      <strong>
+                        <span t-if="o._fields.get('invoice_date') and o.invoice_date" t-esc="o.invoice_date"/>
+                        <span t-elif="o._fields.get('date_order') and o.date_order" t-esc="o.date_order"/>
+                      </strong>
                     </td>
                   </tr>
 
@@ -80,7 +86,9 @@
                       <strong>Client</strong>
                     </td>
                     <td style="border: 1px solid black; padding: 2px; margin-top: 0px;">
-                      <span t-if="o.partner_id" t-esc="o.partner_id.name"/>
+                      <strong>
+                        <span t-if="o.partner_id" t-esc="o.partner_id.name"/>
+                      </strong>
                     </td>
                   </tr>
 
@@ -91,9 +99,11 @@
                     </td>
                     <td style="border: 1px solid black; padding: 2px; margin-top: 0px;">
                       <t t-if="report_type == 'pdf'">
+                      <strong>
                         <span class="page"/>1 <span class="topage"/>
+                      </strong>
                       </t>
-                      <t t-else="">1</t>
+                        <t t-else="">1</t>
                     </td>
                   </tr>
                 </table>
@@ -465,8 +475,8 @@
           <!-- ============================================================= -->
           <!-- MONTANT EN LETTRES (conversion automatique)                  -->
           <!-- ============================================================= -->
-          <div style="width: 100%; margin-top: 15px; text-align: left; font-size: 14px; page-break-inside: avoid; break-inside: avoid;">
-            <p style="margin: 0; line-height: 1.4; word-wrap: break-word; overflow-wrap: break-word;">
+          <div style="width: 100%; margin-top: 1px; text-align: left; font-size: 14px; page-break-inside: avoid; break-inside: avoid;">
+            <p style="margin: 0; line-height: 1.1; word-wrap: break-word; overflow-wrap: break-word;">
               <strong>
                 <!-- Texte différent selon le type de document -->
                 <t t-if="o._name == 'account.move'">

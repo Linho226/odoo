@@ -65,12 +65,12 @@
 
     <!-- Mettre Quantity en gras -->
     <xpath expr="//thead/tr/th[@name='th_quantity']" position="replace">
-      <th name="th_quantity" class="fw-bold">Quantity</th>
+      <th name="th_quantity" class="fw-bold text-end">Quantité</th>
     </xpath>
 
     <!-- Mettre Unit Price en gras et aligner à droite -->
     <xpath expr="//thead/tr/th[@name='th_priceunit']" position="replace">
-      <th name="th_priceunit" class="fw-bold text-end">Unit Price</th>
+      <th name="th_priceunit" class="fw-bold text-end">Prix unitaire</th>
     </xpath>
 
     <!-- 2. Remplacement du tbody pour ajouter les colonnes référence, store, unité et TVA dans chaque ligne -->

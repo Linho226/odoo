@@ -142,7 +142,7 @@
 
       <!-- Mettre Quantity en gras -->
       <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[@name='th_quantity']" position="replace">
-        <th name="th_quantity" class="text-center fw-bold" style="width: 15mm;">Quantity</th>
+        <th name="th_quantity" class="text-center fw-bold" style="width: 15mm;">quantité</th>
       </xpath>
 
     </template>
