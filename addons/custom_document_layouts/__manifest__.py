@@ -9,7 +9,6 @@
     "data": [
         'views/external_layout_modern.xml',
         'views/report_invoice_document_remove_due_date.xml',
-        'views/report_sale_order_due_date.xml',
         'views/external_layout_sale_order.xml',
         'views/report_invoice_numbering.xml',
         'views/report_invoice_tax.xml',

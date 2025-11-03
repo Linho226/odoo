@@ -32,18 +32,18 @@
     <!-- 1. Insérer les colonnes "Code" et "Store" avant "Description" dans l'en-tête -->
     <xpath expr="//thead/tr/th[@name='th_description']" position="before">
       <!-- Colonne N° supprimée -->
-      <th class="text-start" style="width: 25mm;">Code</th>
-      <th class="text-center" style="width: 15mm;">Store</th>
+      <th class="text-start fw-bold" style="width: 25mm;">Code</th>
+      <th class="text-center fw-bold" style="width: 15mm;">Store</th>
     </xpath>
 
     <xpath expr="//thead/tr/th[@name='th_priceunit']" position="after">
       <!-- Déplacement de la colonne TVA ici -->
-      <th class="text-end" style="width: 8%;">TVA</th>
+      <th class="text-end fw-bold" style="width: 8%;">TVA</th>
     </xpath>
 
     <!-- Modification du titre de la colonne Amount -->
     <xpath expr="//thead/tr/th[@name='th_subtotal']" position="replace">
-      <th class="text-end" name="th_subtotal">
+      <th class="text-end fw-bold" name="th_subtotal">
         <span>Montant HTVA</span>
       </th>
     </xpath>
@@ -55,7 +55,22 @@
 
     <!-- Ajouter la colonne Unité après la colonne Quantité dans l'en-tête -->
     <xpath expr="//thead/tr/th[@name='th_quantity']" position="after">
-      <th class="text-center" style="width: 15mm;">Unité</th>
+      <th class="text-center fw-bold" style="width: 15mm;">Unité</th>
+    </xpath>
+
+    <!-- Mettre Description en gras -->
+    <xpath expr="//thead/tr/th[@name='th_description']" position="replace">
+      <th name="th_description" class="fw-bold">Description</th>
+    </xpath>
+
+    <!-- Mettre Quantity en gras -->
+    <xpath expr="//thead/tr/th[@name='th_quantity']" position="replace">
+      <th name="th_quantity" class="fw-bold">Quantity</th>
+    </xpath>
+
+    <!-- Mettre Unit Price en gras -->
+    <xpath expr="//thead/tr/th[@name='th_priceunit']" position="replace">
+      <th name="th_priceunit" class="fw-bold">Unit Price</th>
     </xpath>
 
     <!-- 2. Remplacement du tbody pour ajouter les colonnes référence, store, unité et TVA dans chaque ligne -->
@@ -82,19 +97,19 @@
             </td>
 
             <!-- Colonne Description sans référence -->
-            <td name="td_name">
+            <td name="td_name" class="text-start fw-bold">
               <span t-field="line.product_id.name"/>
             </td>
 
             <!-- Colonne Quantité (sans unité) -->
-            <td class="text-end">
+            <td class="text-end fw-bold">
               <span t-out="line.product_uom_qty" t-options="{'widget': 'float', 'precision': 0, 'thousands_sep': ' '}"/>
             </td>
 
             <!-- Nouvelle colonne Unité -->
             <!--pour line.product.uom pour les version plus recente d'odoo ajouter id ex: line.product_uom.id-->
             <td class="text-center" style="width: 15mm;">
-              <span t-if="line.product_uom_id" t-out="line.product_uom_id.name"/>
+              <span t-if="line.product_uom" t-out="line.product_uom.name"/>
               <span t-elif="line.product_id.uom_id" t-out="line.product_id.uom_id.name"/>
               <span t-else="">-</span>
             </td>
@@ -106,8 +121,8 @@
             <!-- pour les version plus recente d'odoo ajouter un s à tax_id-->
             <td class="text-end" style="width: 8%;">
               <t t-set="vat18_amount" t-value="0"/>
-              <t t-if="line.tax_ids and line.price_unit">
-                <t t-foreach="line.tax_ids" t-as="tax">
+              <t t-if="line.tax_id and line.price_unit">
+                <t t-foreach="line.tax_id" t-as="tax">
                   <t t-if="tax.tax_group_id and ('VAT' in tax.tax_group_id.name.upper() or 'T.V.A. 18%' in tax.tax_group_id.name.upper()) and tax.amount == 18">
                     <t t-set="vat18_amount" t-value="line.product_uom_qty * line.price_unit * 0.18"/>
                   </t>
@@ -186,6 +201,6 @@
         </div>
       </div>
     </xpath>
-
+    
   </template>
 </odoo>

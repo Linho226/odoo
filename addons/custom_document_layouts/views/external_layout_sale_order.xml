@@ -17,9 +17,6 @@
           <t t-esc="company.country_id.name"/><br/>
         </div>
       </div>
-
-      <!-- Le contenu du document sera injecté ici via t-call -->
-      <t t-out="0"/>
     </t>
   </template>
 </odoo>

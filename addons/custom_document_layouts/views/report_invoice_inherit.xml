@@ -23,4 +23,13 @@
         </xpath>
 
     </template>
+
+    <data>
+        <template id="report_invoice_document_inherit_bold_priceunit" inherit_id="account.report_invoice_document">
+            <xpath expr="//th[@name='th_priceunit']/span" position="replace">
+                <span class="fw-bold">Unit Price</span>
+            </xpath>
+        </template>
+    </data>
+
 </odoo>

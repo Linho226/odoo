@@ -13,7 +13,7 @@
             <td class="text-end" style="width: 12%; white-space: nowrap;">
                 <t t-set="vat18_amount" t-value="0"/>
                 <t t-foreach="line.tax_ids" t-as="tax">
-                    <t t-if="tax.tax_group_id and 'VAT' in tax.tax_group_id.name.upper() and tax.amount == 18">
+                    <t t-if="tax.tax_group_id and ('VAT' in tax.tax_group_id.name.upper() or 'T.V.A. 18%' in tax.tax_group_id.name.upper()) and tax.amount == 18">
                         <t t-set="vat18_amount" t-value="line.price_subtotal * 0.18"/>
                     </t>
                 </t>

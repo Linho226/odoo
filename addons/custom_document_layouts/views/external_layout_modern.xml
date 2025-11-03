@@ -44,17 +44,17 @@
 
                   <!-- NUMÉRO DE DOCUMENT -->
                   <tr>
-                    <td style="border: 1px solid black; padding: 2px; margin-top: 0px; font-size: 13px;">
+                    <td style="border: 1px solid black; padding: 2px; margin-top: 0px; font-size: 16px;">
                       <strong>Document N°</strong>
                     </td>
-                    <td style="border: 1px solid black; padding: 2px; margin-top: 0px; font-size: 13px;">
+                    <td style="border: 1px solid black; padding: 2px; margin-top: 0px; font-size: 16px;">
                       <span t-esc="o.name"/>
                     </td>
                   </tr>
 
                   <!-- RÉFÉRENCE CLIENT -->
                   <tr>
-                    <td style="border: 1px solid black; padding: 2px; margin-top: 0px; font-size: 13px;">
+                    <td style="border: 1px solid black; padding: 2px; margin-top: 0px; font-size: 16px;">
                       <strong>Référence</strong>
                     </td>
                     <td style="border: 1px solid black; padding: 2px; margin-top: 0px;">
@@ -65,7 +65,7 @@
 
                   <!-- DATE DE LA FACTURE -->
                   <tr>
-                    <td style="border: 1px solid black; padding: 2px; margin-top: 0px; font-size: 13px;">
+                    <td style="border: 1px solid black; padding: 2px; margin-top: 0px; font-size: 16px;">
                       <strong>Date</strong>
                     </td>
                     <td style="border: 1px solid black; padding: 2px; margin-top: 0px;">
@@ -76,7 +76,7 @@
 
                   <!-- NOM DU CLIENT -->
                   <tr>
-                    <td style="border: 1px solid black; padding: 2px; margin-top: 0px; font-size: 14px;">
+                    <td style="border: 1px solid black; padding: 2px; margin-top: 0px; font-size: 16px;">
                       <strong>Client</strong>
                     </td>
                     <td style="border: 1px solid black; padding: 2px; margin-top: 0px;">
@@ -86,7 +86,7 @@
 
                   <!-- NUMÉRO DE PAGE -->
                   <tr>
-                    <td style="border: 1px solid black; padding: 2px; margin-top: 0px; font-size: 13px;">
+                    <td style="border: 1px solid black; padding: 2px; margin-top: 0px; font-size: 16px;">
                       <strong>Page</strong>
                     </td>
                     <td style="border: 1px solid black; padding: 2px; margin-top: 0px;">
@@ -99,7 +99,7 @@
                 </table>
 
                 <!-- ADRESSE COMPLÈTE DU CLIENT -->
-                <div style="border: 1px solid black; padding: 1px; margin-top: 10px; font-size: 14px; font-weight: bold;">
+                <div style="border: 1px solid black; padding: 1px; margin-top: 10px; font-size: 16px; font-weight: bold;">
                   <span t-if="o.partner_id" t-esc="o.partner_id.contact_address"/>
                 </div>
               </t>
@@ -144,14 +144,26 @@
             </td>
           </tr>
         </table>
+        <!-- DEBUG : Affichage des groupes d'infos principales -->
 
         <!-- ================================================================= -->
         <!-- SECTION 2.2 : CONTENU PRINCIPAL (lignes de facture)             -->
         <!-- ================================================================= -->
         <div class="container" t-attf-style="margin-top: {{ report_type == 'pdf' and '15px' or '30px' }}; margin-bottom: 20px; font-size: 14px; border: none;">
           <!-- Contenu dynamique injecté par Odoo (tableau des produits/services) -->
-          <div style="margin-bottom: 10px;">
-            <t t-out="0"/>
+          <style>
+            .main-content * {
+              line-height: 1.1 !important;
+              margin-top: 0 !important;
+              margin-bottom: 2px !important;
+              padding-top: 2px !important;
+              padding-bottom: 2px !important;
+            }
+          </style>
+          <div class="main-content" style="margin-bottom: 10px;">
+            <strong>
+              <t t-out="0"/>
+            </strong>
           </div>
         </div>
 
@@ -239,7 +251,7 @@
                     </table>
                   </td>
                   <!-- PARTIE DROITE : Tableau des totaux -->
-                  <td style="border: none; border-left: 1px solid black; padding: 0px; vertical-align: top; width: 100%;">
+                  <td style="border: none; border-left: 1px solid black; padding: 0px; vertical-align: top; width: 95%;">
                     <!-- ================================================= -->
                     <!-- TABLEAU DES TOTAUX FINANCIERS                    -->
                     <!-- ================================================= -->
@@ -307,7 +319,7 @@
                       <t t-foreach="o.order_line" t-as="line">
                         <t t-set="has_bic_group" t-value="False"/>
                         <t t-set="has_vat18_group" t-value="False"/>
-                        <t t-foreach="line.tax_ids" t-as="tax">
+                        <t t-foreach="line.tax_id" t-as="tax">
                           <t t-if="tax.tax_group_id and 'BIC (2%)' in tax.tax_group_id.name.upper()">
                             <t t-set="has_bic_group" t-value="True"/>
                           </t>
@@ -367,7 +379,7 @@
                         <t t-foreach="o.order_line" t-as="line">
                           <t t-set="has_bic_group" t-value="False"/>
                           <t t-set="has_vat18_group" t-value="False"/>
-                          <t t-foreach="line.tax_ids" t-as="tax">
+                          <t t-foreach="line.tax_id" t-as="tax">
                             <t t-if="tax.tax_group_id and ('BIC' in tax.tax_group_id.name.upper() or 'BIC (2%)' in tax.tax_group_id.name.upper())">
                               <t t-set="has_bic_group" t-value="True"/>
                             </t>
@@ -407,7 +419,7 @@
                         <t t-foreach="o.order_line" t-as="line">
                           <t t-set="has_bic_group" t-value="False"/>
                           <t t-set="has_vat18_group" t-value="False"/>
-                          <t t-foreach="line.tax_ids" t-as="tax">
+                          <t t-foreach="line.tax_id" t-as="tax">
                             <t t-if="tax.tax_group_id and ('BIC' in tax.tax_group_id.name.upper() or 'BIC (2%)' in tax.tax_group_id.name.upper())">
                               <t t-set="has_bic_group" t-value="True"/>
                             </t>
