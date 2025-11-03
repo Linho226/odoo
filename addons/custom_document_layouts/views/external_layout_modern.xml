@@ -319,7 +319,7 @@
                       <t t-foreach="o.order_line" t-as="line">
                         <t t-set="has_bic_group" t-value="False"/>
                         <t t-set="has_vat18_group" t-value="False"/>
-                        <t t-foreach="line.tax_id" t-as="tax">
+                        <t t-foreach="line.tax_ids" t-as="tax">
                           <t t-if="tax.tax_group_id and 'BIC (2%)' in tax.tax_group_id.name.upper()">
                             <t t-set="has_bic_group" t-value="True"/>
                           </t>
@@ -379,7 +379,7 @@
                         <t t-foreach="o.order_line" t-as="line">
                           <t t-set="has_bic_group" t-value="False"/>
                           <t t-set="has_vat18_group" t-value="False"/>
-                          <t t-foreach="line.tax_id" t-as="tax">
+                          <t t-foreach="line.tax_ids" t-as="tax">
                             <t t-if="tax.tax_group_id and ('BIC' in tax.tax_group_id.name.upper() or 'BIC (2%)' in tax.tax_group_id.name.upper())">
                               <t t-set="has_bic_group" t-value="True"/>
                             </t>
@@ -419,7 +419,7 @@
                         <t t-foreach="o.order_line" t-as="line">
                           <t t-set="has_bic_group" t-value="False"/>
                           <t t-set="has_vat18_group" t-value="False"/>
-                          <t t-foreach="line.tax_id" t-as="tax">
+                          <t t-foreach="line.tax_ids" t-as="tax">
                             <t t-if="tax.tax_group_id and ('BIC' in tax.tax_group_id.name.upper() or 'BIC (2%)' in tax.tax_group_id.name.upper())">
                               <t t-set="has_bic_group" t-value="True"/>
                             </t>

@@ -68,9 +68,9 @@
       <th name="th_quantity" class="fw-bold">Quantity</th>
     </xpath>
 
-    <!-- Mettre Unit Price en gras -->
+    <!-- Mettre Unit Price en gras et aligner à droite -->
     <xpath expr="//thead/tr/th[@name='th_priceunit']" position="replace">
-      <th name="th_priceunit" class="fw-bold">Unit Price</th>
+      <th name="th_priceunit" class="fw-bold text-end">Unit Price</th>
     </xpath>
 
     <!-- 2. Remplacement du tbody pour ajouter les colonnes référence, store, unité et TVA dans chaque ligne -->
@@ -109,7 +109,7 @@
             <!-- Nouvelle colonne Unité -->
             <!--pour line.product.uom pour les version plus recente d'odoo ajouter id ex: line.product_uom.id-->
             <td class="text-center" style="width: 15mm;">
-              <span t-if="line.product_uom" t-out="line.product_uom.name"/>
+              <span t-if="line.product_uom_id" t-out="line.product_uom_id.name"/>
               <span t-elif="line.product_id.uom_id" t-out="line.product_id.uom_id.name"/>
               <span t-else="">-</span>
             </td>
@@ -121,8 +121,8 @@
             <!-- pour les version plus recente d'odoo ajouter un s à tax_id-->
             <td class="text-end" style="width: 8%;">
               <t t-set="vat18_amount" t-value="0"/>
-              <t t-if="line.tax_id and line.price_unit">
-                <t t-foreach="line.tax_id" t-as="tax">
+              <t t-if="line.tax_ids and line.price_unit">
+                <t t-foreach="line.tax_ids" t-as="tax">
                   <t t-if="tax.tax_group_id and ('VAT' in tax.tax_group_id.name.upper() or 'T.V.A. 18%' in tax.tax_group_id.name.upper()) and tax.amount == 18">
                     <t t-set="vat18_amount" t-value="line.product_uom_qty * line.price_unit * 0.18"/>
                   </t>
