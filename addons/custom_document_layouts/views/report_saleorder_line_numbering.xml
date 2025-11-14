@@ -3,6 +3,7 @@
   <template id="report_saleorder_document_inherit_numbering" inherit_id="sale.report_saleorder_document" priority="20">
 
     <!-- Ajout de styles pour supprimer les bordures à l'impression -->
+    <!-- Ajout de styles pour supprimer les bordures à l'impression -->
     <xpath expr="//div[hasclass('page')]" position="before">
       <style>
             @media print {
@@ -20,7 +21,7 @@
                 
                 /* Suppression des bordures générales */
                 table.table-borderless,
-                table.table-borderless td,
+                table.table-bhttps://aesafriquetest.odoo.com/odoo/settingsorderless td,
                 table.table-borderless tr,
                 table.table-borderless th {
                     border: none !important;
@@ -32,18 +33,18 @@
     <!-- 1. Insérer les colonnes "Code" et "Store" avant "Description" dans l'en-tête -->
     <xpath expr="//thead/tr/th[@name='th_description']" position="before">
       <!-- Colonne N° supprimée -->
-      <th class="text-start fw-bold" style="width: 25mm;">Code</th>
-      <th class="text-center fw-bold" style="width: 15mm;">Store</th>
+      <th class="text-left fw-bold">Code</th>
+      <th class="text-left fw-bold">Store</th>
     </xpath>
 
     <xpath expr="//thead/tr/th[@name='th_priceunit']" position="after">
       <!-- Déplacement de la colonne TVA ici -->
-      <th class="text-end fw-bold" style="width: 8%;">TVA</th>
+      <th class="fw-bold" style="width: 30mm !important; padding-right: 60px !important;">TVA</th>
     </xpath>
 
     <!-- Modification du titre de la colonne Amount -->
     <xpath expr="//thead/tr/th[@name='th_subtotal']" position="replace">
-      <th class="text-end fw-bold" name="th_subtotal">
+      <th class="text-end fw-bold" style="width: 35mm !important; padding-right: 25px !important;" name="th_subtotal">
         <span>Montant HTVA</span>
       </th>
     </xpath>
@@ -55,22 +56,22 @@
 
     <!-- Ajouter la colonne Unité après la colonne Quantité dans l'en-tête -->
     <xpath expr="//thead/tr/th[@name='th_quantity']" position="after">
-      <th class="text-center fw-bold" style="width: 15mm;">Unité</th>
+      <th class="text-center fw-bold" style="width: 20mm !important; padding-right: 15px !important;">Unité</th>
     </xpath>
 
     <!-- Mettre Description en gras -->
     <xpath expr="//thead/tr/th[@name='th_description']" position="replace">
-      <th name="th_description" class="fw-bold">Description</th>
+      <th name="th_description" class="fw-bold" style="width: 65mm !important; padding-right: 10px !important;">Description</th>
     </xpath>
 
     <!-- Mettre Quantity en gras -->
     <xpath expr="//thead/tr/th[@name='th_quantity']" position="replace">
-      <th name="th_quantity" class="fw-bold text-end">Quantité</th>
+      <th name="th_quantity" class="fw-bold text-end" style="width: 0mm !important; padding-right: 10px !important;">Quantité</th>
     </xpath>
 
     <!-- Mettre Unit Price en gras et aligner à droite -->
     <xpath expr="//thead/tr/th[@name='th_priceunit']" position="replace">
-      <th name="th_priceunit" class="fw-bold text-end">Prix unitaire</th>
+        <th name="th_priceunit" class="fw-bold text-start" style="width: 30mm !important; text-align: right !important; padding-right: 30px !important;">Prix unitaire</th> 
     </xpath>
 
     <!-- 2. Remplacement du tbody pour ajouter les colonnes référence, store, unité et TVA dans chaque ligne -->
@@ -86,14 +87,13 @@
             <!-- Colonne N° supprimée -->
 
             <!-- Colonne Référence -->
-            <td class="text-start" style="width: 25mm;">
+            <td class="text-left">
               <span t-esc="line.product_id and line.product_id.default_code or ''"/>
             </td>
 
-            <!-- Colonne Store -->
-            <td class="text-center" style="width: 15mm;">
-              <span t-if="line.product_id and line.product_id._fields.get('store_location')" t-out="line.product_id.store_location"/>
-              <span t-else="">BIS</span>
+            <!-- Colonne Source -->
+            <td class="text-left">
+              <span t-esc="doc.source_id.name"/>
             </td>
 
             <!-- Colonne Description sans référence -->
@@ -146,14 +146,7 @@
             </td>
           </tr>
 
-          <t t-if="current_section and (
-              line_index + 1 == len(lines_to_report)
-              or lines_to_report[line_index+1].display_type == 'line_section'
-              or lines_to_report[line_index+1].product_type == 'combo'
-              or (
-                line.combo_item_id and not lines_to_report[line_index+1].combo_item_id
-              )
-            ) and not line.is_downpayment">
+          <t t-if="current_section and (               line_index + 1 == len(lines_to_report)               or lines_to_report[line_index+1].display_type == 'line_section'               or lines_to_report[line_index+1].product_type == 'combo'               or (                 line.combo_item_id and not lines_to_report[line_index+1].combo_item_id               )             ) and not line.is_downpayment">
             <t t-set="current_section" t-value="None"/>
             <tr class="is-subtotal text-end">
               <td name="td_section_subtotal" colspan="99">
@@ -182,8 +175,7 @@
             </tr>
             <tr style="border: 2px solid #000;">
               <td style="border: 2px solid #000;">
-                <strong>T.V.A. <span t-out="doc.amount_tax / doc.amount_untaxed * 100 if doc.amount_untaxed else 0" t-options="{'widget': 'float', 'precision': 0}"/>
-%</strong>
+                <strong>T.V.A. <span t-out="doc.amount_tax / doc.amount_untaxed * 100 if doc.amount_untaxed else 0" t-options="{'widget': 'float', 'precision': 0}"/>%</strong>
               </td>
               <td class="text-end" style="border: 2px solid #000;">
                 <span t-out="doc.amount_tax" t-options="{'widget': 'float', 'precision': 0, 'thousands_sep': ' '}"/>
@@ -201,6 +193,5 @@
         </div>
       </div>
     </xpath>
-    
   </template>
 </odoo>

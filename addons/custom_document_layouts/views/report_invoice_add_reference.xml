@@ -2,23 +2,18 @@
 <odoo>
   <data>
 
-    <!-- =========================================================
-         Ajout des colonnes "Référence", "Store", "Unité" dans le rapport facture
-         ========================================================= -->
-    <template id="report_invoice_add_reference" inherit_id="account.report_invoice_document" priority="25">
-
-      <!-- 1️⃣  SUPPRIMER LA COLONNE N° DE L'ENTÊTE -->
+    <!-- 1️⃣  SUPPRIMER LA COLONNE N° DE L'ENTÊTE -->
       <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[@name='th_line_number']" position="replace">
       </xpath>
 
       <!-- 1️⃣bis  ENTÊTE : ajoute "Référence" avant la colonne Description -->
       <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[@name='th_description']" position="before">
-        <th name="th_product_ref" class="text-start fw-bold" style="width: 25mm;">Code</th>
+        <th name="th_product_ref" class="text-left fw-bold">Code</th>
       </xpath>
 
       <!-- 1️⃣ter  ENTÊTE : ajoute "Store" après la colonne Référence -->
       <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[@name='th_product_ref']" position="after">
-        <th name="th_store" class="text-center fw-bold" style="width: 15mm;">Store</th>
+        <th name="th_store" class="text-left fw-bold">Store</th>
       </xpath>
 
       <!-- 1️⃣quater  ENTÊTE : ajoute "Unité" après la colonne Quantité -->
@@ -27,9 +22,14 @@
       </xpath>
 
       <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[@name='th_unit']" position="after">
-          <th name="th_priceunit" class="text-center" style="width: 10mm; font-weight: bold;"> 
-          </th>
+        <th name="th_priceunit" class="text-start fw-bold" style="font-weight: bold; text-align: left;">Prix unitaire</th>
       </xpath>
+       <style>
+          th[name="th_priceunit"] {
+            text-align: left !important;
+            padding-left: 20px !important;
+          }
+        </style>
 
       <!-- 1️⃣quinquies  SUPPRIMER LA COLONNE TAXES DE L'ENTÊTE -->
       <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[@name='th_taxes']" position="replace">
@@ -41,7 +41,7 @@
 
       <!-- 2️⃣bis  CORPS : ajoute la valeur default_code avant la description -->
       <xpath expr="//table[@name='invoice_line_table']/tbody//td[@name='account_invoice_line_name']" position="before">
-        <td name="td_product_ref" class="text-start" style="width: 25mm;">
+        <td name="td_product_ref" class="text-left">
           <!-- Si le produit existe on affiche sa référence, sinon vide -->
           <span t-esc="line.product_id and line.product_id.default_code or ''"/>
         </td>
@@ -49,11 +49,9 @@
 
       <!-- 2️⃣ter  CORPS : ajoute la colonne Store après la colonne Référence -->
       <xpath expr="//table[@name='invoice_line_table']/tbody//td[@name='td_product_ref']" position="after">
-        <td name="td_store" class="text-center" style="width: 15mm;">
-          <!-- Version corrigée sans hasattr -->
-          <span t-if="line.product_id and line.product_id._fields.get('store_location')" t-out="line.product_id.store_location"/>
-          <span t-else="">BIS</span>
-        </td>
+               <td name="td_source" class="text-left">
+                  <span t-esc="o.source_id.name"/>
+                </td>
       </xpath>
 
       <!-- 2️⃣quater  Supprimer l'unité de la cellule quantité -->
@@ -72,7 +70,7 @@
       <!-- 2️⃣septies  CORPS : ajouter la cellule Prix unitaire après la cellule Unité -->
       <xpath expr="//table[@name='invoice_line_table']/tbody//td[@name='td_unit']" position="after">
         <td name="td_price_unit" class="text-center fw-bold" style="width: 10mm;">
-          <t t-set="formatted_price" t-value="'{:,}'.format(int(line.price_unit)).replace(',', ' ') if line.price_unit >= 1 else '{:g}'.format(line.price_unit)"/>
+          <t t-set="formatted_price" t-value="'{:,}'.format(int(line.price_unit)).replace(',', ' ') if line.price_unit &gt;= 1 else '{:g}'.format(line.price_unit)"/>
           <span t-out="formatted_price" style="white-space: nowrap;"/>
         </td>
       </xpath>
@@ -84,8 +82,6 @@
       <!-- 3️⃣  COLGROUP : redéfinir entièrement le colgroup avec les nouvelles colonnes -->
       <xpath expr="//table[@name='invoice_line_table']/colgroup" position="replace">
         <colgroup>
-          <!-- Store -->
-          <col style="width: 15mm;"/>
           <!-- Description -->
           <col/>
           <!-- Quantity -->
@@ -120,14 +116,14 @@
 
       <!-- 7️⃣  Formater le Prix unitaire avec des espaces et empêcher le retour à la ligne -->
       <xpath expr="//span[@t-field='line.price_unit']" position="replace">
-        <t t-set="formatted_price" t-value="'{:,}'.format(int(line.price_unit)).replace(',', ' ') if line.price_unit >= 1 else '{:g}'.format(line.price_unit)"/>
+        <t t-set="formatted_price" t-value="'{:,}'.format(int(line.price_unit)).replace(',', ' ') if line.price_unit &gt;= 1 else '{:g}'.format(line.price_unit)"/>
         <span t-out="formatted_price" style="white-space: nowrap;"/>
       </xpath>
 
       <!-- 8️⃣  Enlever le code produit de la description - Version alternative -->
       <xpath expr="//span[@t-field='line.name']" position="replace">
         <t t-set="description_parts" t-value="(line.name or '').split(']')"/>
-        <t t-if="len(description_parts) > 1">
+        <t t-if="len(description_parts) &gt; 1">
           <span t-out="']'.join(description_parts[1:]).strip()"/>
         </t>
         <t t-else="">
@@ -137,7 +133,7 @@
 
       <!-- Mettre Description en gras -->
       <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[@name='th_description']" position="replace">
-        <th name="th_description" class="text-start fw-bold">Description</th>
+        <th name="th_description" class="text-left fw-bold" style="width: 80mm">Description</th>
       </xpath>
 
       <!-- Mettre Quantity en gras -->
