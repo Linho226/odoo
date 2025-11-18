@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
   <data>
-
-    <!-- 1️⃣  SUPPRIMER LA COLONNE N° DE L'ENTÊTE -->
+    <template id="report_invoice_add_reference" inherit_id="account.report_invoice_document" priority="25">
+      <!-- 1️⃣  SUPPRIMER LA COLONNE N° DE L'ENTÊTE -->
       <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[@name='th_line_number']" position="replace">
       </xpath>
 
@@ -26,8 +26,8 @@
       </xpath>
        <style>
           th[name="th_priceunit"] {
-            text-align: left !important;
-            padding-left: 20px !important;
+            text-align: right !important;
+            padding-right: 20px !important;
           }
         </style>
 

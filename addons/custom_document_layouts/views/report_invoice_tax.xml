@@ -5,7 +5,7 @@
 
         <!-- Ajouter l'en-tête de colonne pour les taxes avant Amount -->
         <xpath expr="//table[@name='invoice_line_table']//thead//tr//th[@name='th_subtotal']" position="before">
-            <th class="text-start fw-bold" style="width: 10%; font-weight: bold; text-align: left; padding-left: 10px;">TVA</th>
+            <th class="text-start fw-bold" style=" font-weight: bold; text-align: Center; padding-left: 50px !important;">TVA</th>
         </xpath>
         
         <!-- Ajouter la colonne des taxes dans le corps du tableau avant Amount -->

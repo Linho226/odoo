@@ -3,7 +3,6 @@
   <template id="report_saleorder_document_inherit_numbering" inherit_id="sale.report_saleorder_document" priority="20">
 
     <!-- Ajout de styles pour supprimer les bordures à l'impression -->
-    <!-- Ajout de styles pour supprimer les bordures à l'impression -->
     <xpath expr="//div[hasclass('page')]" position="before">
       <style>
             @media print {
@@ -39,12 +38,12 @@
 
     <xpath expr="//thead/tr/th[@name='th_priceunit']" position="after">
       <!-- Déplacement de la colonne TVA ici -->
-      <th class="fw-bold" style="width: 30mm !important; padding-right: 60px !important;">TVA</th>
+      <th class="fw-bold" style="width: 30mm !important; padding-left: 65px !important;">TVA</th>
     </xpath>
 
     <!-- Modification du titre de la colonne Amount -->
     <xpath expr="//thead/tr/th[@name='th_subtotal']" position="replace">
-      <th class="text-end fw-bold" style="width: 35mm !important; padding-right: 25px !important;" name="th_subtotal">
+      <th class="text-end fw-bold" style="padding-right: 10px !important;" name="th_subtotal">
         <span>Montant HTVA</span>
       </th>
     </xpath>
@@ -56,7 +55,7 @@
 
     <!-- Ajouter la colonne Unité après la colonne Quantité dans l'en-tête -->
     <xpath expr="//thead/tr/th[@name='th_quantity']" position="after">
-      <th class="text-center fw-bold" style="width: 20mm !important; padding-right: 15px !important;">Unité</th>
+      <th class="text-center fw-bold" style="width: 0mm !important; padding-left: 15px !important;">Unité</th>
     </xpath>
 
     <!-- Mettre Description en gras -->
@@ -66,12 +65,12 @@
 
     <!-- Mettre Quantity en gras -->
     <xpath expr="//thead/tr/th[@name='th_quantity']" position="replace">
-      <th name="th_quantity" class="fw-bold text-end" style="width: 0mm !important; padding-right: 10px !important;">Quantité</th>
+      <th name="th_quantity" class="fw-bold text-end" style="width:30mm !important; padding-right: 0px !important;">Quantité</th>
     </xpath>
 
     <!-- Mettre Unit Price en gras et aligner à droite -->
     <xpath expr="//thead/tr/th[@name='th_priceunit']" position="replace">
-        <th name="th_priceunit" class="fw-bold text-start" style="width: 30mm !important; text-align: right !important; padding-right: 30px !important;">Prix unitaire</th> 
+        <th name="th_priceunit" class="fw-bold text-start" style="width: 0mm !important; text-align: right !important; padding-right: 0px !important; white-space: nowrap;">Prix unitaire</th> 
     </xpath>
 
     <!-- 2. Remplacement du tbody pour ajouter les colonnes référence, store, unité et TVA dans chaque ligne -->
@@ -119,7 +118,7 @@
             </td>
             <!-- TVA déplacé ici -->
             <!-- pour les version plus recente d'odoo ajouter un s à tax_id-->
-            <td class="text-end" style="width: 8%;">
+            <td class="text-end" style="width: 8%; padding-left: 40px ! important;">
               <t t-set="vat18_amount" t-value="0"/>
               <t t-if="line.tax_ids and line.price_unit">
                 <t t-foreach="line.tax_ids" t-as="tax">

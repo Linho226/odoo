@@ -56,7 +56,7 @@
                     </td>
                     <td style="border: 2px solid black; padding: 15px 2px 2px 2px;fw-bold; margin-top: 0px; text-align: center;font-size: 14px; font-weight: 900; font-family: Arial, sans-serif;">
                       <strong>
-                        <span t-esc="o.name"/>
+                        <span t-esc="o.name.replace('PRO', '', 1)"/>
                       </strong>
                     </td>
                   </tr>
@@ -68,8 +68,9 @@
                     </td>
                     <td style="border: 2px solid black; padding: 15px 2px 2px 2px; margin-top: 0px;font-size: 14px;text-align: center; font-weight: 900; font-family: Arial, sans-serif;">
                       <strong>
-                        <span t-if="o._fields.get('ref') and o.ref" t-esc="o.ref"/>
-                        <span t-elif="o._fields.get('client_order_ref') and o.client_order_ref" t-esc="o.client_order_ref"/>
+                        <span t-if="o._fields.get('ref') and o.ref" t-esc="o.ref.replace('PRO', '', 1)"/>
+                        <span t-elif="o._fields.get('client_order_ref') and o.client_order_ref" t-esc="o.client_order_ref.replace('PRO', '', 1)"/>
+                        <span t-else="">-</span>
                       </strong>
                     </td>
                   </tr>
@@ -97,8 +98,8 @@
                     </td>
                     <td style="border: 2px solid black; padding: 15px 2px 2px 2px; margin-top: 0px; font-size: 14px; text-align: center;">
                       <strong>
-                        <span t-if="o._fields.get('invoice_date') and o.invoice_date" t-esc="o.invoice_date"/>
-                        <span t-elif="o._fields.get('date_order') and o.date_order" t-esc="o.date_order"/>
+                        <span t-if="o._fields.get('invoice_date') and o.invoice_date" t-esc="o.invoice_date.strftime('%d/%m/%Y')"/>
+                        <span t-elif="o._fields.get('date_order') and o.date_order" t-esc="o.date_order.strftime('%d/%m/%Y')"/>
                       </strong>
                     </td>
                   </tr>
@@ -145,7 +146,7 @@
                   </div>
                   
                 </div>
-                
+
             </div>
           </t>
         </td>
@@ -162,13 +163,13 @@
           <div style="display: inline-block; text-align: left; padding: 2px 10px 2px 10px; margin-top: -80px; border: 1px solid transparent;">
 
             <!-- SLOGAN/EN-TÊTE DE L'ENTREPRISE -->
-            <div style="padding-top: 35px; margin-left: 50px; font-size: 20px; font-family: 'Arial Black', sans-serif; font-weight: 900; color: #000; line-height: 1.0; margin-bottom: -10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            <div style="padding-top: 40px; margin-left: 50px; font-size: 20px; font-family: 'Arial Black', sans-serif; font-weight: 900; color: #000; line-height: 1.0; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
               <span t-esc="company.report_header"/>
             </div>
 
             <!-- DÉTAILS DE L'ENTREPRISE (adresse, téléphone, etc.) -->
             <div>
-              <ul class="mb-0" style="list-style: none; padding: 0; margin-left: 50px; font-size: 18px; font-family: Arial, sans-serif;line-height: 1.0; margin-bottom: -40px; margin-top: -46px;">
+              <ul class="mb-0" style="list-style: none; padding: 0; margin-left: 50px; font-size: 17px; font-family: Arial, sans-serif;line-height: 1.0; margin-bottom: -40px; margin-top: -46px;">
                 <li t-if="company.company_details">
                   <span t-esc="company.company_details"/>
                 </li>
@@ -325,7 +326,7 @@
                 <!-- ================================================= -->
                 <!-- TABLEAU DES TOTAUX FINANCIERS                    -->
                 <!-- ================================================= -->
-                <table class="custom-totals" style="width: 100%; border-collapse: collapse; table-layout:fixed; line-height: 1.1;">
+                <table class="custom-totals" style="width: 100%; border-collapse: collapse; table-layout:auto; line-height: 1.1;">
 
                   <!-- LIGNE 1 : SOUS-TOTAL HT -->
                   <tr t-if="o._fields.get('amount_untaxed') and o.amount_untaxed">
@@ -333,9 +334,9 @@
                       <strong>Sous-Total F CFA</strong>
                     </td>
                     <!-- Colonne vide pour alignement avec les autres lignes -->
-                    <td style="text-align: center; padding: 2px; border: 2px solid black; width: 35%; font-size: 13px;"/>
+                    <td style="text-align: center; padding: 2px; border: 2px solid black; width: 25%; font-size: 13px;"/>
                     <!-- Montant formaté (espaces au lieu de virgules) -->
-                    <td style="text-align: right; padding: 2px; border: 2px solid black; width: 20%; white-space: nowrap;font-size: 13px;">
+                    <td style="text-align: right; padding: 2px; border: 2px solid black; width: 30%; white-space: nowrap;font-size: 13px;">
                       <span t-esc="'{:,.2f}'.format(o.amount_untaxed).replace(',', ' ').replace('.00', '').replace('.', ',')"/>
                     </td>
                   </tr>
@@ -349,13 +350,13 @@
 
                   <!-- LIGNE 2 : TVA (Taxe sur la Valeur Ajoutée) -->
                   <tr t-if="o._fields.get('amount_tax')">
-                    <td style="text-align: left; padding: 2px; border: 2px solid black; width: 30%; font-size: 13px;">
+                    <td style="text-align: left; padding: 2px; border: 2px solid black; width: 35%; font-size: 13px;">
                       <strong>TVA</strong>
                     </td>
-                    <td style="text-align: center; padding: 2px; border: 2px solid black; width: 35%; font-size: 13px;">
+                    <td style="text-align: center; padding: 2px; border: 2px solid black; width: 25%; font-size: 13px;">
                           18%
                     </td>
-                    <td style="text-align: right; padding: 2px; border: 2px solid black; width: 20%; white-space: nowrap; font-size: 13px;">
+                    <td style="text-align: right; padding: 2px; border: 2px solid black; width: 30%; white-space: nowrap; font-size: 13px;">
                       <t t-set="bic_amount" t-value="0"/>
                       <t t-if="o._fields.get('tax_totals') and o.tax_totals">
                         <t t-foreach="o.tax_totals.get('subtotals', [])" t-as="subtotal">
@@ -370,14 +371,18 @@
                     </td>
                   </tr>
 
-                  <!-- LIGNE 3 : TOTAL GÉNÉRAL TTC F (colonnes fusionnées) -->
                   <tr t-if="o._fields.get('amount_total')">
-                    <td colspan="2" style="text-align: left; padding: 2px; border: 2px solid black; font-size: 13px;">
+                    <td style="text-align: left; padding: 2px; border: 2px solid black; width: 35%; white-space: nowrap; font-size: 13px;">
                       <strong>Total Général TTC F CFA</strong>
                     </td>
-                    <td style="text-align: right; padding: 2px; border: 2px solid black; width: 20%; white-space: nowrap; font-size: 13px;">
+                    <td style="text-align: center; padding: 2px; border: 2px solid black; width: 25%; white-space: nowrap;  font-size: 13px;">
+                    </td>
+                    <td style="text-align: right; padding: 2px; border: 2px solid black; width: 30%; white-space: nowrap; font-size: 13px;">
                       <strong>
-                        <span t-esc="'{:,.2f}'.format(o.amount_total).replace(',', ' ').replace('.00', '').replace('.', ',')"/>
+                        <span t-if="bic_amount > 0"
+                              t-esc="'{:,.2f}'.format((o.amount_untaxed or 0) + (o.amount_tax or 0) - bic_amount).replace(',', ' ').replace('.00', '').replace('.', ',')"/>
+                        <span t-else=""
+                              t-esc="'{:,.2f}'.format((o.amount_untaxed or 0) + (o.amount_tax or 0)).replace(',', ' ').replace('.00', '').replace('.', ',')"/>
                       </strong>
                     </td>
                   </tr>
@@ -428,14 +433,14 @@
 
                   <!-- Ligne BIC (affichée seulement si bic_amount > 0) -->
                   <tr t-if="bic_amount &gt; 0">
-                    <td style="text-align: left; padding: 2px; border: 2px solid black; width: 30%; font-size: 13px;">
+                    <td style="text-align: left; padding: 2px; border: 2px solid black; width: 35%; font-size: 13px;">
                       <strong>BIC</strong>
                     </td>
-                    <td style="text-align: center; padding: 2px; border: 2px solid black; width: 35%;font-size: 13px;">
+                    <td style="text-align: center; padding: 2px; border: 2px solid black; width: 25%;font-size: 13px;">
                           2%
                     </td>
-                    <td style="text-align: right; padding: 2px; border: 2px solid black; width: 20%; white-space: nowrap;font-size: 13px;">
-                      <span t-esc="'{:,.2f}'.format(bic_amount).replace(',', ' ').replace('.00', '').replace('.', ',')"/>
+                    <td style="text-align: right; padding: 2px; border: 2px solid black; width: 30%; white-space: nowrap;font-size: 13px;">
+                      <span t-esc="'{:,.0f}'.format(bic_amount).replace(',', ' ').replace('.', ',')"/>
                     </td>
                   </tr>
                   <!--Pour les verisons en lignes d'odoo, dans le groupe des taxes la tva est recunue en tant que T.V.A. 18%
@@ -526,16 +531,16 @@
 
                   <!-- LIGNE 5 : NET À PAYER (affichée seulement si BIC > 0) -->
                   <tr t-if="bic_amount &gt; 0 and o._fields.get('amount_total')">
-                    <td style="text-align: left; padding: 2px; border: 2px solid black; width: 30%; font-size: 13px;">
-                      <strong>Net à Payer F CFA</strong>
-                    </td>
-                    <td style="text-align: center; padding: 2px; border: 2px solid black; width: 35%;"/>
-                    <td style="text-align: right; padding: 2px; border: 2px solid black; width: 20%; white-space: nowrap; font-size: 13px;">
-                      <strong>
-                        <t t-set="net_a_payer" t-value="o.amount_total + bic_amount"/>
-                        <span t-esc="'{:,.2f}'.format(net_a_payer).replace(',', ' ').replace('.00', '').replace('.', ',')"/>
-                      </strong>
-                    </td>
+                      <td style="text-align: left; padding: 2px; border: 2px solid black; width: 35%; font-size: 13px;">
+                        <strong>Net à Payer F CFA</strong>
+                      </td>
+                      <td style="text-align: center; padding: 2px; border: 2px solid black; width: 25%;"/>
+                      <td style="text-align: right; padding: 2px; border: 2px solid black; width: 30%; white-space: nowrap; font-size: 13px;">
+                        <strong>
+                          <t t-set="net_a_payer" t-value="(o.amount_untaxed or 0) + (o.amount_tax or 0)"/>
+                          <span t-esc="'{:,.2f}'.format(net_a_payer).replace(',', ' ').replace('.00', '').replace('.', ',')"/>
+                        </strong>
+                      </td>
                   </tr>
                 </table>
               </td>
